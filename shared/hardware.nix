@@ -1,6 +1,29 @@
-# Example to create a bios compatible gpt partition
-{lib, ...}: {
-  disko.devices = {
+{modulesPath, ...}: {
+  imports = [
+    (modulesPath + "/installer/scan/not-detected.nix")
+    (modulesPath + "/profiles/qemu-guest.nix")
+    # ./disk-config.nix
+  ];
+
+  boot.loader.grub = {
+    # devices = [ ];
+    efiSupport = true;
+    efiInstallAsRemovable = true;
+  };
+
+  services.openssh = {
+    enable = true;
+    settings.PasswordAuthentication = false;
+    extraConfig = ''
+      PrintLastLog no
+    '';
+  };
+
+  users.users.root.openssh.authorizedKeys.keys = [
+    (builtins.readFile ./id_rsa.pub)
+  ];
+
+    disko.devices = {
     disk.disk1 = {
       device = lib.mkDefault "/dev/sda";
       type = "disk";

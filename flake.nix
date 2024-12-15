@@ -15,18 +15,15 @@
   inputs.disko.url = "github:nix-community/disko";
   inputs.disko.inputs.nixpkgs.follows = "nixpkgs";
 
-  inputs.jeezyvim.url = "github:LGUG2Z/JeezyVim";
-
   outputs = inputs:
     with inputs; let
-      secrets = builtins.fromJSON (builtins.readFile "${self}/secrets.json");
-
+      # secrets = builtins.fromJSON (builtins.readFile "${self}/secrets.json");
       nixpkgsWithOverlays = system: (import nixpkgs rec {
         inherit system;
         config = {
           allowUnfree = true;
           permittedInsecurePackages = [
-            # FIXME:: add any insecure packages you absolutely need here
+            # add any insecure packages you absolutely need here
           ];
         };
 
@@ -81,11 +78,11 @@
 
       nixosConfigurations.nixos = mkNixosConfiguration {
         hostname = "nixos";
-        username = "nixos"; # FIXME: replace with your own username!
+        username = "nixos";
         modules = [
           disko.nixosModules.disko
-          ./hetzner.nix
-          ./linux.nix
+          ./shared/hardware.nix
+          ./shared/configuration.nix
         ];
       };
     };
